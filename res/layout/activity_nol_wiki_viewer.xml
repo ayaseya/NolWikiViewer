@@ -10,14 +10,16 @@
         android:id="@+id/left_draw"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-        <Button
+
+        <View
+            android:layout_width="16dp"
+            android:layout_height="match_parent"
+            android:background="#202020" />
+
+        <WebView
+            android:id="@+id/webView"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="drawer button" />
-<!--         <WebView -->
-<!--             android:id="@+id/webView" -->
-<!--             android:layout_width="match_parent" -->
-<!--             android:layout_height="match_parent" /> -->
+            android:layout_height="match_parent" />
     </LinearLayout>
     <!-- The navigation drawer -->
 
