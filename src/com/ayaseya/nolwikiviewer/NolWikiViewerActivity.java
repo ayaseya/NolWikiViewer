@@ -1,5 +1,6 @@
 package com.ayaseya.nolwikiviewer;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -16,12 +17,15 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 public class NolWikiViewerActivity extends Activity {
 
 	private ActionBarDrawerToggle drawerToggle;
 	private DrawerLayout drawerLayout;
 	private WebView webview;
+	public static final String TAG = "Test";
+	private JsoupTaskMenu menu;
 
 	/* ********** ********** ********** ********** */
 
@@ -97,13 +101,12 @@ public class NolWikiViewerActivity extends Activity {
 		// デフォルトではloadUrl()で読み込んだページ内のリンクをクリックすると、
 		// 標準のブラウザが起動してしまうため、リンク先のページも
 		// WebView内で表示させるためWebViewClientを設定する
-		webview.setWebViewClient(new WebViewClient());
+		webview.setWebViewClient(client);
 
 		String html = "<html><head><title>Test</title></head><body><h1>Hello, world!</h1></body></html>";
 
-
 		try {
-			
+
 			FileOutputStream fos = openFileOutput("Test.html", MODE_PRIVATE);
 			OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
 			osw.append(html);
@@ -113,10 +116,61 @@ public class NolWikiViewerActivity extends Activity {
 			Log.d("Test", "Error");
 		}
 		// ファイルアクセスデレクトリの表示
+		Log.v("Test", "file://" + getFilesDir().getPath() + "/Test.html");
 
-		webview.loadUrl("file://" + getFilesDir().getPath() + "/Test.html");
+		//		webview.loadUrl("http://ohmynobu.net/index.php");
+		webview.loadUrl("file://" + getFilesDir().getPath() + "/Test1.html");
+
+		
+		// ////////////////////////////////////////////////
+		// /Menuを読み込む
+		// ////////////////////////////////////////////////
+		
+		menu = new JsoupTaskMenu(this,this);
+		menu.execute("http://ohmynobu.net/index.php");
+		
+		
+		
 
 	}
+
+	private WebViewClient client = new WebViewClient() {
+
+		@Override
+		public boolean shouldOverrideUrlLoading(WebView view, String url) {
+			//			return super.shouldOverrideUrlLoading(view, url);
+
+			//フルパスで渡されたurlの文字列の一部を削除する
+			// file:///data/data/com.ayaseya.nolwikiviewer/files/Test.html
+			// ↓
+			//        /data/data/com.ayaseya.nolwikiviewer/files/Test.html
+
+			url = url.replaceAll("file://", "");
+			File file = new File(url);
+
+			// キャッシュが存在するか確認し存在したらリンク先へ移動
+			// 存在しなかった場合はキャッシュを作成するためhtmlの読み込みと保存処理
+			if (file.exists()) {
+				Toast.makeText(NolWikiViewerActivity.this, "ファイルが見つかりました", Toast.LENGTH_SHORT).show();
+				return false;
+
+			} else {
+				Toast.makeText(NolWikiViewerActivity.this, "ファイルが見つかりませんでした", Toast.LENGTH_SHORT).show();
+			}
+			return true;
+
+			//			Uri request = Uri.parse(url);
+			//			if (TextUtils.equals(request.getAuthority(), "ohmynobu.net")) {
+			//				// リンク先のURLが寄合所と同じホスト名であるか判断する
+			//				// 一致したらリンク先への移動を許可する
+			//				return false;
+			//			}
+			//			// 一致しなかった場合はリンク先への移動を許可しない
+			//			Toast.makeText(NolWikiViewerActivity.this, "外部サイトへ移動することはできません", Toast.LENGTH_SHORT).show();
+			//			return true;
+		}
+
+	};
 
 	// 戻る(タッチキー)を押した時の処理
 	@Override
