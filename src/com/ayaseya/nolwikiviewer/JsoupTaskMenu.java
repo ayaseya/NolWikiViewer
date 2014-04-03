@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import android.app.Activity;
 import android.content.Context;
@@ -62,26 +64,51 @@ public class JsoupTaskMenu extends AsyncTask<String, Void, String> {
 			e.printStackTrace();
 		}
 
-		String menubar = document.getElementById("menubar").toString();
+		//		String menubar = document.getElementById("menubar").toString();
+		//		return menubar;
 
-		return menubar;
+		String result = null;
+
+		// <div id="menubar"><li><a>text</a><li></div>の要素を取り出す
+		// <a>text<a/>と出力される
+		//		Elements links = document.select("#menubar li a");
+
+		// メニューバーの要素を抽出する
+		Element menu = document.getElementById("menubar");
+		// <a>タグの要素を抽出する
+		Elements aTag = menu.getElementsByTag("a");
+
+		//　メニュー名となるテキスト要素のみを抽出する
+		String link_name = aTag.text();
+
+		link_name = link_name.replaceAll("↑", "");
+		link_name = link_name.replaceAll("  ", "");
+		link_name = link_name.replaceAll(" ", "<br>");
+
+		// メニューの遷移先となるURL
+		StringBuffer link_url = new StringBuffer();
+		Pattern pattern = Pattern.compile("(http://|https://){1}[\\w\\.\\-/:\\#\\?\\=\\&\\;\\%\\~\\+]+"
+				, Pattern.CASE_INSENSITIVE);
+		Matcher matcher = pattern.matcher(aTag.toString());
+		while (matcher.find()) {
+			link_url.append(matcher.group());
+			link_url.append("<br>");
+		}
+
+		//		for (Element element : aTag) {
+		//			result += extract_URL(aTag.toString());
+		//		}
+
+		return link_name;
+
 	}
 
 	// バッググラウンドで実行した処理が終了したら実行される
 	@Override
 	protected void onPostExecute(String result) {
 
-		Pattern pattern = Pattern.compile("(http://|https://){1}[\\w\\.\\-/:\\#\\?\\=\\&\\;\\%\\~\\+]+"
-				, Pattern.CASE_INSENSITIVE);
-
-		Matcher matcher = pattern.matcher(result);
-
 		StringBuffer str = new StringBuffer();
-
-		while (matcher.find()) {
-			str.append(matcher.group());
-			str.append("<br>");
-		}
+		str.append(result);
 
 		// metaタグは"で文字列が終了したと認識させないようにするため、
 		// "の前に\(エスケープシークエンス)を記述する
@@ -105,4 +132,5 @@ public class JsoupTaskMenu extends AsyncTask<String, Void, String> {
 		//		textView = (TextView) activity.findViewById(R.id.parseResultView);
 		//		textView.setText(result);
 	}
+
 }
