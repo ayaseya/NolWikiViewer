@@ -4,19 +4,23 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ExpandableListView;
+import android.widget.SimpleExpandableListAdapter;
 import android.widget.Toast;
 
 public class NolWikiViewerActivity extends Activity {
@@ -26,6 +30,7 @@ public class NolWikiViewerActivity extends Activity {
 	private WebView webview;
 	public static final String TAG = "Test";
 	private JsoupTaskMenu menu;
+	private ProgressDialog loading;
 
 	/* ********** ********** ********** ********** */
 
@@ -53,12 +58,12 @@ public class NolWikiViewerActivity extends Activity {
 				R.string.drawer_close) {
 			@Override
 			public void onDrawerClosed(View drawerView) {
-				Log.v("Test", "onDrawerClosed()");
+				//				Log.v("Test", "onDrawerClosed()");
 			}
 
 			@Override
 			public void onDrawerOpened(View drawerView) {
-				Log.v("Test", "onDrawerOpened()");
+				//				Log.v("Test", "onDrawerOpened()");
 			}
 
 			@Override
@@ -113,24 +118,92 @@ public class NolWikiViewerActivity extends Activity {
 			PrintWriter writer = new PrintWriter(osw);
 			writer.close();
 		} catch (Exception e) {
-			Log.d("Test", "Error");
+			//			Log.d("Test", "Error");
 		}
 		// ファイルアクセスデレクトリの表示
-		Log.v("Test", "file://" + getFilesDir().getPath() + "/Test.html");
+		//		Log.v("Test", "file://" + getFilesDir().getPath() + "/Test.html");
 
 		//		webview.loadUrl("http://ohmynobu.net/index.php");
 		webview.loadUrl("file://" + getFilesDir().getPath() + "/Test1.html");
 
-		
+		// ダイアログの設定
+		loading = new ProgressDialog(this);
+		loading.setTitle(getString(R.string.transmitting));
+		loading.setMessage(getString(R.string.wait));
+		loading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		loading.setCancelable(false);
+
+		loading.show();
+
 		// ////////////////////////////////////////////////
 		// /Menuを読み込む
 		// ////////////////////////////////////////////////
-		
-		menu = new JsoupTaskMenu(this,this);
+
+		menu = new JsoupTaskMenu(this, this, loading);
 		menu.execute("http://ohmynobu.net/index.php");
-		
-		
-		
+
+		// ////////////////////////////////////////////////
+		// /ExpandableListView
+		// ////////////////////////////////////////////////
+
+		ExpandableListView parentView = (ExpandableListView) findViewById(R.id.expandableListView_parent);
+
+		// 親リスト
+		//ArrayList<HashMap<階層名(親), 親の名前(カテゴリ名)>> groupData = new ArrayList<HashMap<String, String>>();
+		ArrayList<HashMap<String, String>> groupData = new ArrayList<HashMap<String, String>>();
+		String parentName = "parent";
+		// 子リスト
+		ArrayList<ArrayList<HashMap<String, String>>> childData = new ArrayList<ArrayList<HashMap<String, String>>>();
+		String childName = "child";
+
+		// 孫リスト
+		//		ArrayList<ArrayList<HashMap<String, String>>> grandchildData = new ArrayList<ArrayList<HashMap<String, String>>>();
+		//		String grandchildName = "grandchild";
+
+		String[] parent = getResources().getStringArray(R.array.parent);
+
+		// 親の数だけ繰り返して親リストにデータを格納する
+		for (int i = 0; i < parent.length; i++) {
+			HashMap<String, String> group = new HashMap<String, String>();
+			String item = parent[i];// xmlで定義した配列から親の名前(カテゴリ名)を取得する
+			group.put(parentName, item);// HashMapデータに格納
+			groupData.add(group);// HashMapデータを親リストに格納
+
+			String childId = "child_" + i;
+
+			int arrayId = getResources().getIdentifier(childId, "array", getPackageName());// child_0のR.array.idを取得する
+			if (arrayId != 0) {//子要素がある場合のみ追加
+
+				String[] child = getResources().getStringArray(arrayId);// child_iの配列要素を取得する
+
+				ArrayList<HashMap<String, String>> childList = new ArrayList<HashMap<String, String>>();
+				for (String childItem : child) {// 拡張for文でchild_iの配列要素をすべて取得する
+					HashMap<String, String> childHash = new HashMap<String, String>();
+					childHash.put(parentName, item);
+					childHash.put(childName, childItem);
+					childList.add(childHash);
+				}
+				childData.add(childList);// child_iの配列要素を子リストに格納
+			} else {//子要素がない場合は子要素を追加しない
+				ArrayList<HashMap<String, String>> childList = new ArrayList<HashMap<String, String>>();
+				childData.add(childList);
+			}
+		}
+
+		// 親リスト、子リストを含んだAdapterを生成
+		SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
+				getApplicationContext(), // コンテキスト
+				groupData,// 親のリスト
+				android.R.layout.simple_expandable_list_item_1,// 親のアイテムを表示に使用するレイアウト
+				new String[] { parentName },// 親のレイアウトに表示するデータ
+				new int[] { android.R.id.text1 },// データを表示するTextViewのid
+				childData,// 子のリスト
+				android.R.layout.simple_expandable_list_item_2,// 子のアイテムを表示に使用するレイアウト
+				new String[] { childName, parentName },// 子のレイアウトに表示するデータ
+				new int[] { android.R.id.text1, android.R.id.text2 });// データを表示するTextViewのid
+
+		// ExpandableListViewにAdapterをセット
+		parentView.setAdapter(adapter);
 
 	}
 

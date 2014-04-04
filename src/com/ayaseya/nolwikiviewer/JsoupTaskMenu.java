@@ -13,6 +13,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -42,14 +43,14 @@ public class JsoupTaskMenu extends AsyncTask<String, Void, String> {
 	private Document document;
 	private Activity activity;
 	private Context context;
+	private ProgressDialog loading;
 
 	// コンストラクタ
-	public JsoupTaskMenu(Activity activity, Context context) {
+	public JsoupTaskMenu(Activity activity, Context context,ProgressDialog loading) {
 		super();
 		this.activity = activity;
 		this.context = context;
-
-		Log.v("Test", "JsoupTaskMenu()");
+		this.loading=loading;
 	}
 
 	// バックグラウンドで実行する処理
@@ -82,7 +83,7 @@ public class JsoupTaskMenu extends AsyncTask<String, Void, String> {
 		String link_name = aTag.text();
 
 		link_name = link_name.replaceAll("↑", "");
-		link_name = link_name.replaceAll("  ", "");
+//		link_name = link_name.replaceAll("  ", "");
 		link_name = link_name.replaceAll(" ", "<br>");
 
 		// メニューの遷移先となるURL
@@ -94,6 +95,13 @@ public class JsoupTaskMenu extends AsyncTask<String, Void, String> {
 			link_url.append(matcher.group());
 			link_url.append("<br>");
 		}
+				
+		// メニューバーの要素を抽出する
+		Element content_2_1 = document.getElementById("content_2_1");
+		// <a>タグの要素を抽出する
+		Elements content_2_1_aTag = content_2_1.getElementsByTag("a");
+		
+//		Log.v("Test", "content_2_1_aTag"+content_2_1.toString());
 
 		//		for (Element element : aTag) {
 		//			result += extract_URL(aTag.toString());
@@ -129,6 +137,9 @@ public class JsoupTaskMenu extends AsyncTask<String, Void, String> {
 		WebView webview = (WebView) activity.findViewById(R.id.webView);
 		webview.loadUrl("file://" + context.getFilesDir().getPath() + "/menu.html");
 
+		
+		loading.dismiss();
+		
 		//		textView = (TextView) activity.findViewById(R.id.parseResultView);
 		//		textView.setText(result);
 	}

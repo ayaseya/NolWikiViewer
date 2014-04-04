@@ -28,13 +28,9 @@
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="left"
-        android:background="#333" >
+        android:background="#333333" >
 
-        <Button
-            android:id="@+id/drawer_button"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:text="drawer button" />
+        <include layout="@layout/navigation_drawer" />
     </LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>

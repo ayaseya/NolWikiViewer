@@ -6,5 +6,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="drawer_open">OPEN</string>
     <string name="drawer_close">CLOSE</string>
+    <string name="transmitting">通信中</string>
+    <string name="wait">Please wait…</string>
 
 </resources>

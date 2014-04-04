@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="parent">
+        <item>犬</item>
+        <item>猫</item>
+        <item>人</item>
+        <item>鳥</item>
+    </string-array>
+    <string-array name="child_0">
+        <item>犬1</item>
+        <item>犬2</item>
+        <item>犬3</item>
+    </string-array>
+<!--     <string-array name="child_1"> -->
+<!--         <item>猫1</item> -->
+<!--         <item>猫2</item> -->
+<!--         <item>猫3</item> -->
+<!--     </string-array> -->
+    <string-array name="child_2">
+        <item>人1</item>
+        <item>人2</item>
+        <item>人3</item>
+    </string-array>
+<!--     <string-array name="child_3"></string-array> -->
+    
+    
+    
+    
+    <string-array name="grandchild_0"></string-array>
+    <string-array name="grandchild_1"></string-array>
+    <string-array name="grandchild_2"></string-array>
+    <string-array name="grandchild_3"></string-array>
+
+</resources>
