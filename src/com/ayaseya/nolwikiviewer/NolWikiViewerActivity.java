@@ -4,9 +4,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
+import pl.polidea.treeview.InMemoryTreeStateManager;
+import pl.polidea.treeview.TreeBuilder;
+import pl.polidea.treeview.TreeStateManager;
+import pl.polidea.treeview.TreeViewList;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.res.Configuration;
@@ -16,11 +20,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ExpandableListView;
-import android.widget.SimpleExpandableListAdapter;
 import android.widget.Toast;
 
 public class NolWikiViewerActivity extends Activity {
@@ -32,8 +33,17 @@ public class NolWikiViewerActivity extends Activity {
 	private JsoupTaskMenu menu;
 	private ProgressDialog loading;
 
+	private final Set<Long> selected = new HashSet<Long>();
+	private TreeViewList treeView;
+	private static final int LEVEL_NUMBER = 3;
+	private TreeStateManager<Long> manager = null;
+	private TreeViewAdapter simpleAdapter;
+
+	private String[] names;
+
 	/* ********** ********** ********** ********** */
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -42,15 +52,6 @@ public class NolWikiViewerActivity extends Activity {
 		// ////////////////////////////////////////////////
 		// /NavigationDrawer
 		// ////////////////////////////////////////////////
-
-		findViewById(R.id.drawer_button).setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				drawerLayout.closeDrawers();
-
-			}
-		});
 
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
@@ -143,67 +144,33 @@ public class NolWikiViewerActivity extends Activity {
 		menu.execute("http://ohmynobu.net/index.php");
 
 		// ////////////////////////////////////////////////
-		// /ExpandableListView
+		// /TestTreeView
 		// ////////////////////////////////////////////////
 
-		ExpandableListView parentView = (ExpandableListView) findViewById(R.id.expandableListView_parent);
+		names = getResources().getStringArray(R.array.menu_name);
 
-		// 親リスト
-		//ArrayList<HashMap<階層名(親), 親の名前(カテゴリ名)>> groupData = new ArrayList<HashMap<String, String>>();
-		ArrayList<HashMap<String, String>> groupData = new ArrayList<HashMap<String, String>>();
-		String parentName = "parent";
-		// 子リスト
-		ArrayList<ArrayList<HashMap<String, String>>> childData = new ArrayList<ArrayList<HashMap<String, String>>>();
-		String childName = "child";
+		if (savedInstanceState == null) {
+			manager = new InMemoryTreeStateManager<Long>();
+			final TreeBuilder<Long> treeBuilder = new TreeBuilder<Long>(manager);
 
-		// 孫リスト
-		//		ArrayList<ArrayList<HashMap<String, String>>> grandchildData = new ArrayList<ArrayList<HashMap<String, String>>>();
-		//		String grandchildName = "grandchild";
-
-		String[] parent = getResources().getStringArray(R.array.parent);
-
-		// 親の数だけ繰り返して親リストにデータを格納する
-		for (int i = 0; i < parent.length; i++) {
-			HashMap<String, String> group = new HashMap<String, String>();
-			String item = parent[i];// xmlで定義した配列から親の名前(カテゴリ名)を取得する
-			group.put(parentName, item);// HashMapデータに格納
-			groupData.add(group);// HashMapデータを親リストに格納
-
-			String childId = "child_" + i;
-
-			int arrayId = getResources().getIdentifier(childId, "array", getPackageName());// child_0のR.array.idを取得する
-			if (arrayId != 0) {//子要素がある場合のみ追加
-
-				String[] child = getResources().getStringArray(arrayId);// child_iの配列要素を取得する
-
-				ArrayList<HashMap<String, String>> childList = new ArrayList<HashMap<String, String>>();
-				for (String childItem : child) {// 拡張for文でchild_iの配列要素をすべて取得する
-					HashMap<String, String> childHash = new HashMap<String, String>();
-					childHash.put(parentName, item);
-					childHash.put(childName, childItem);
-					childList.add(childHash);
-				}
-				childData.add(childList);// child_iの配列要素を子リストに格納
-			} else {//子要素がない場合は子要素を追加しない
-				ArrayList<HashMap<String, String>> childList = new ArrayList<HashMap<String, String>>();
-				childData.add(childList);
+			for (int i = 0; i < names.length; i++) {
+				treeBuilder.sequentiallyAddNextNode((long) i,
+						Integer.parseInt(names[i].substring(0, 1)));
 			}
+
+		} else {
+			manager = (TreeStateManager<Long>) savedInstanceState.getSerializable("treeManager");
+			if (manager == null) {
+				manager = new InMemoryTreeStateManager<Long>();
+			}
+
 		}
 
-		// 親リスト、子リストを含んだAdapterを生成
-		SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
-				getApplicationContext(), // コンテキスト
-				groupData,// 親のリスト
-				android.R.layout.simple_expandable_list_item_1,// 親のアイテムを表示に使用するレイアウト
-				new String[] { parentName },// 親のレイアウトに表示するデータ
-				new int[] { android.R.id.text1 },// データを表示するTextViewのid
-				childData,// 子のリスト
-				android.R.layout.simple_expandable_list_item_2,// 子のアイテムを表示に使用するレイアウト
-				new String[] { childName, parentName },// 子のレイアウトに表示するデータ
-				new int[] { android.R.id.text1, android.R.id.text2 });// データを表示するTextViewのid
 
-		// ExpandableListViewにAdapterをセット
-		parentView.setAdapter(adapter);
+		treeView = (TreeViewList) findViewById(R.id.mainTreeView);
+		simpleAdapter = new TreeViewAdapter(this, selected, manager, LEVEL_NUMBER, this);
+		treeView.setAdapter(simpleAdapter);
+		manager.collapseChildren(null);
 
 	}
 
@@ -285,6 +252,12 @@ public class NolWikiViewerActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.nol_wiki_viewer, menu);
 		return true;
+	}
+
+	@Override
+	protected void onSaveInstanceState(final Bundle outState) {
+		outState.putSerializable("treeManager", manager);
+		super.onSaveInstanceState(outState);
 	}
 
 }

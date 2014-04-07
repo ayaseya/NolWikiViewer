@@ -28,9 +28,26 @@
         android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="left"
-        android:background="#333333" >
+        android:background="#333333"
+        android:orientation="vertical" >
 
-        <include layout="@layout/navigation_drawer" />
+        <ListView
+            android:layout_width="0dip"
+            android:layout_height="0dip"
+            android:scrollbars="vertical"
+            android:visibility="gone" >
+
+            <!-- Just to test some attributes in IDE -->
+        </ListView>
+
+        <pl.polidea.treeview.TreeViewList
+            xmlns:treeView="http://schemas.android.com/apk/res/com.ayaseya.nolwikiviewer"
+            android:id="@+id/mainTreeView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:scrollbars="vertical"
+            android:smoothScrollbar="true"
+            treeView:indicator_gravity="right|center_vertical" />
     </LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>

@@ -1,35 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="parent">
-        <item>犬</item>
-        <item>猫</item>
-        <item>人</item>
-        <item>鳥</item>
+    <string-array name="menu_name">
+        <item>0:合戦・ダンジョン・NPC</item>
+        <item>1:信On入門</item>
+        <item>1:FAQ</item>
+        <item>1:新参者ゾーン</item>
+        <item>1:地図</item>
+        <item>1:勢力</item>
+        <item>1:合戦</item>
+        <item>2:合戦</item>
+        <item>2:拠点戦</item>
+        <item>2:陣取戦</item>
+        <item>2:大決戦</item>
+        <item>1:ダンジョン</item>
+        <item>2:ダンジョン</item>
+        <item>2:妖魔陣</item>
+        <item>2:ﾄﾗｲｱﾙﾀﾞﾝｼﾞｮﾝ</item>
+        <item>2:黄泉～イザ宮</item>
+        <item>2:凶神の冥宮</item>
+        <item>2:星野山千尋窟</item>
+        <item>2:陸海空</item>
+        <item>2:九州三国志</item>
+        <item>2:高千穂</item>
+        <item>2:伊勢路の戦い</item>
+        <item>2:独眼竜の野望</item>
+        <item>1:敵NPCリスト</item>
+        <item>0:職業・生産・クエスト</item>
+        <item>1:職業</item>
+        <item>2:職業</item>
+        <item>2:生産</item>
+        <item>2:技能</item>
+        <item>2:潜在能力</item>
+        <item>2:技能覚醒</item>
+        <item>1:アイテム</item>
+        <item>1:クエスト</item>
+        <item>2:クエスト</item>
+        <item>2:毎日クエスト</item>
+        <item>2:中級者クエスト</item>
+        <item>2:上級者クエスト</item>
+        <item>1:採集情報</item>
+        <item>1:御蔵番拡張</item>
+        <item>1:武家屋敷</item>
+        <item>2:武家屋敷</item>
+        <item>2:ペット</item>
+        <item>1:紋所</item>
+        <item>1:官位</item>
+        <item>1:知行</item>
+        <item>0:天下夢幻の章</item>
+        <item>1:天下夢幻の章</item>
+        <item>1:天下夢幻新目録</item>
+        <item>1:軍神</item>
+        <item>1:攻城戦</item>
+        <item>1:もののふ道場</item>
+        <item>2:もののふ道場</item>
+        <item>2:魔宮ワダツミ</item>
+        <item>2:魔穴富士地下</item>
+        <item>2:魔獣の森</item>
+        <item>2:魔障の浅瀬</item>
+        <item>2:魔都裏堺</item>
+        <item>2:魔洞東尋坊</item>
+        <item>1:安土</item>
+        <item>0:鳳凰の章</item>
+        <item>1:鳳凰の章</item>
+        <item>1:鳳凰新目録</item>
+        <item>1:秀吉戦記</item>
+        <item>2:秀吉戦記</item>
+        <item>2:桶狭間の戦い</item>
+        <item>2:長篠の戦い</item>
+        <item>2:山崎の戦い</item>
+        <item>2:賤ヶ岳の戦い</item>
+        <item>1:忘却の魔境</item>
+        <item>1:週刊かわら版</item>
+        <item>1:城下町</item>
+        <item>1:家臣団</item>
+        <item>0:新星の章</item>
+        <item>1:新星の章</item>
+        <item>1:新星新目録</item>
+        <item>1:独眼竜の野望</item>
+        <item>2:独眼竜の野望</item>
+        <item>2:鬼門比叡山</item>
+        <item>2:松島</item>
+        <item>2:人取橋</item>
+        <item>2:小田原の陣</item>
+        <item>2:関ヶ原の陣</item>
+        <item>2:時の狭間</item>
+        <item>1:天下人</item>
+        <item>2:天下人</item>
+        <item>2:合戦</item>
+        <item>2:拠点戦</item>
+        <item>1:一門</item>
+        <item>2:一門</item>
+        <item>2:所領</item>
+        <item>1:評定</item>
+        <item>2:評定</item>
+        <item>2:評定依頼</item>
+        <item>2:領国市</item>
+        <item>1:新アイテム</item>
+        <item>2:新アイテム</item>
+        <item>2:腰袋</item>
+        <item>2:指輪</item>
+        <item>1:潜在能力</item>
+        <item>0:その他</item>
+        <item>1:戦国絵巻</item>
+        <item>1:上覧武術大会</item>
+        <item>1:＠モバイル</item>
+        <item>1:小ネタ</item>
+        <item>1:信オンTools</item>
+        <item>1:Nobusionary</item>
+        <item>1:過去の遺物</item>
+        <item>1:リンク集</item>
+        <item>1:寄合所について</item>
     </string-array>
-    <string-array name="child_0">
-        <item>犬1</item>
-        <item>犬2</item>
-        <item>犬3</item>
-    </string-array>
-<!--     <string-array name="child_1"> -->
-<!--         <item>猫1</item> -->
-<!--         <item>猫2</item> -->
-<!--         <item>猫3</item> -->
-<!--     </string-array> -->
-    <string-array name="child_2">
-        <item>人1</item>
-        <item>人2</item>
-        <item>人3</item>
-    </string-array>
-<!--     <string-array name="child_3"></string-array> -->
-    
-    
-    
-    
-    <string-array name="grandchild_0"></string-array>
-    <string-array name="grandchild_1"></string-array>
-    <string-array name="grandchild_2"></string-array>
-    <string-array name="grandchild_3"></string-array>
 
 </resources>
