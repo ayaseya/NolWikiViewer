@@ -10,7 +10,7 @@
 	    android:padding="4dip"
 	    android:text="Text"
 	    android:textColor="#ffffff"
-	    android:textSize="24dp" >
+	    android:textSize="16sp" >
 
 	</TextView>
 

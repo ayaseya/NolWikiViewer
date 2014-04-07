@@ -19,6 +19,7 @@ import android.widget.TextView;
 class TreeViewAdapter extends AbstractTreeViewAdapter<Long> {
 
 	private String[] names;
+	private String[] url;
 
 	//    private final Set<Long> selected;
 	//
@@ -47,6 +48,7 @@ class TreeViewAdapter extends AbstractTreeViewAdapter<Long> {
 			Context context) {
 		super(treeViewListDemo, treeStateManager, numberOfLevels);
 		names = context.getResources().getStringArray(R.array.menu_name);
+		url = context.getResources().getStringArray(R.array.menu_url);
 		//        this.selected = selected;
 	}
 
@@ -97,13 +99,16 @@ class TreeViewAdapter extends AbstractTreeViewAdapter<Long> {
 	@Override
 	public void handleItemClick(final View view, final Object id) {
 		final Long longId = (Long) id;
+
 		final TreeNodeInfo<Long> info = getManager().getNodeInfo(longId);
 
 		if (info.isWithChildren()) {
 			super.handleItemClick(view, id);
 		} else {
+			String str = url[(Integer) id];
 
-			Log.v("Test", "handleItemClick()=" + info);
+			Log.v("Test", "URL=" + url + "html");
+
 			//            final ViewGroup vg = (ViewGroup) view;
 			//            final CheckBox cb = (CheckBox) vg
 			//                    .findViewById(R.id.demo_list_checkbox);

@@ -180,7 +180,7 @@ public class NolWikiViewerActivity extends Activity {
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
 			//			return super.shouldOverrideUrlLoading(view, url);
 
-			//フルパスで渡されたurlの文字列の一部を削除する
+			// フルパスで渡されたurlの文字列の一部を削除する
 			// file:///data/data/com.ayaseya.nolwikiviewer/files/Test.html
 			// ↓
 			//        /data/data/com.ayaseya.nolwikiviewer/files/Test.html
