@@ -1,15 +1,19 @@
 package com.ayaseya.nolwikiviewer;
 
+import java.io.File;
 import java.util.Set;
 
 import pl.polidea.treeview.AbstractTreeViewAdapter;
 import pl.polidea.treeview.TreeNodeInfo;
 import pl.polidea.treeview.TreeStateManager;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * This is a very simple adapter that provides very basic tree view with a
@@ -19,7 +23,11 @@ import android.widget.TextView;
 class TreeViewAdapter extends AbstractTreeViewAdapter<Long> {
 
 	private String[] names;
-	private String[] url;
+	private WebView webview;
+	private Activity activity;
+	private ProgressDialog loading;
+	private Context context;
+	private JsoupTask Jsoup;
 
 	//    private final Set<Long> selected;
 	//
@@ -45,10 +53,12 @@ class TreeViewAdapter extends AbstractTreeViewAdapter<Long> {
 			final Set<Long> selected,
 			final TreeStateManager<Long> treeStateManager,
 			final int numberOfLevels,
-			Context context) {
+			Context context,
+			Activity activity) {
 		super(treeViewListDemo, treeStateManager, numberOfLevels);
 		names = context.getResources().getStringArray(R.array.menu_name);
-		url = context.getResources().getStringArray(R.array.menu_url);
+		this.context = context;
+		this.activity = activity;
 		//        this.selected = selected;
 	}
 
@@ -105,9 +115,40 @@ class TreeViewAdapter extends AbstractTreeViewAdapter<Long> {
 		if (info.isWithChildren()) {
 			super.handleItemClick(view, id);
 		} else {
-			String str = url[(Integer) id];
 
-			Log.v("Test", "URL=" + url + "html");
+			// ダイアログの設定
+			loading = new ProgressDialog(context);
+			loading.setTitle(context.getString(R.string.transmitting));
+			loading.setMessage(context.getString(R.string.wait));
+			loading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			loading.setCancelable(false);
+
+			//			loading.show();
+
+			int index = Integer.parseInt(getDescription(longId));
+			String file_name = names[index];
+			int separate = file_name.indexOf(":");
+			file_name = file_name.substring(separate + 1);
+
+			File file = context.getFileStreamPath(file_name + ".html");
+
+			webview = (WebView) activity.findViewById(R.id.webView);
+
+			// キャッシュが存在するか確認し存在したらリンク先へ移動
+			// 存在しなかった場合はキャッシュを作成するためhtmlの読み込みと保存処理
+			if (file.exists()) {
+
+				webview.loadUrl("file://" + activity.getFilesDir().getPath() + "/" + file_name + ".html");
+
+			} else {
+				Toast.makeText(context, "ファイルが見つかりませんでした", Toast.LENGTH_SHORT).show();
+				loading.show();
+				Jsoup = new JsoupTask(activity, context, loading);
+				Jsoup.execute(file_name);
+
+			}
+
+			//			Log.v("Test", "http://ohmynobu.net/index.php?" + file_name);
 
 			//            final ViewGroup vg = (ViewGroup) view;
 			//            final CheckBox cb = (CheckBox) vg
@@ -120,4 +161,5 @@ class TreeViewAdapter extends AbstractTreeViewAdapter<Long> {
 	public long getItemId(final int position) {
 		return getTreeId(position);
 	}
+
 }

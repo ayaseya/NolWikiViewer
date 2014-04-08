@@ -1,14 +1,24 @@
 package com.ayaseya.nolwikiviewer;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.TextView;
+import android.webkit.WebView;
 
 public class JsoupTask extends AsyncTask<String, Void, String> {
 
@@ -29,40 +39,99 @@ public class JsoupTask extends AsyncTask<String, Void, String> {
 	 *   ※ それぞれ不要な場合は、Voidを設定すれば良い
 	 */
 
-	private TextView textView;
 	private Document document;
 	private Activity activity;
+	private Context context;
+	private ProgressDialog loading;
+	private String file_name;
+	private String path;
 
 	// コンストラクタ
-	public JsoupTask(Activity activity) {
+	public JsoupTask(Activity activity, Context context, ProgressDialog loading) {
 		super();
 		this.activity = activity;
-
-		Log.v("Test", "JsoupTask()");
+		this.context = context;
+		this.loading = loading;
 	}
 
 	// バックグラウンドで実行する処理
 	// returnでonPostExecute()へデータを受け渡す
 	@Override
 	protected String doInBackground(String... params) {
+		file_name = params[0];
 
-		String url = params[0];
+		try {
+			path = URLEncoder.encode(file_name, "EUC-JP");
+			//			Log.v("Test", "Path=" + path);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		String url = "http://ohmynobu.net/index.php?" + path;
 		try {
 			document = Jsoup.connect(url).get();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		String html = document.title();
+		// div id=bodyの中身を取得する
+		Element body = document.getElementById("body");
+		// body内のimgタグを取得する
+		Elements imgTag = body.getElementsByTag("img");
+		for (Element img : imgTag) {
+			img.remove();// 拡張for文でbody内のimgタグを削除する
+		}
 
-		return html;
+		String result = body.toString();
+
+		return result;
+
 	}
 
 	// バッググラウンドで実行した処理が終了したら実行される
 	@Override
 	protected void onPostExecute(String result) {
 
-		//		textView = (TextView) activity.findViewById(R.id.parseResultView);
-		//		textView.setText(result);
+		// metaタグは"で文字列が終了したと認識させないようにするため、
+		// "の前に\(エスケープシークエンス)を記述する
+		String html = "<html><head><title></title>"
+				+ "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">"
+				+ "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"file:///android_asset/pukiwiki.css\" charset=\"Shift_JIS\" />"
+				+ "</head><body>"
+				+ result + "</body></html>";
+		WebView webview = (WebView) activity.findViewById(R.id.webView);
+
+		int comment_separate = file_name.indexOf("/");
+		if (comment_separate != -1) {
+			try {
+				file_name = file_name.substring(comment_separate + 1);
+				FileOutputStream fos = new FileOutputStream(
+						new File(context.getFilesDir().getPath() + "/comment/" + file_name + ".html"));
+
+				OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+				osw.append(html);
+				PrintWriter writer = new PrintWriter(osw);
+				writer.close();
+
+			} catch (Exception e) {
+				Log.v("Test", "Error=" + e);
+			}
+			webview.loadUrl("file://" + context.getFilesDir().getPath() + "/comment/" + file_name + ".html");
+
+		} else {
+			try {
+				FileOutputStream fos = context.openFileOutput(file_name + ".html", Context.MODE_PRIVATE);
+				OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
+				osw.append(html);
+				PrintWriter writer = new PrintWriter(osw);
+				writer.close();
+
+			} catch (Exception e) {
+				Log.v("Test", "Error=" + e);
+			}
+			webview.loadUrl("file://" + context.getFilesDir().getPath() + "/" + file_name + ".html");
+		}
+
+		loading.dismiss();
+
 	}
 }

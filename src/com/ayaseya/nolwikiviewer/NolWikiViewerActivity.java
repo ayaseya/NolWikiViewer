@@ -1,9 +1,8 @@
 package com.ayaseya.nolwikiviewer;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,9 +13,12 @@ import pl.polidea.treeview.TreeViewList;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +42,8 @@ public class NolWikiViewerActivity extends Activity {
 	private TreeViewAdapter simpleAdapter;
 
 	private String[] names;
+	private JsoupTask Jsoup;
+	private File file;
 
 	/* ********** ********** ********** ********** */
 
@@ -48,7 +52,7 @@ public class NolWikiViewerActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_nol_wiki_viewer);
-
+		Log.v(TAG, "/* ********** ********** ********** ********** */");
 		// ////////////////////////////////////////////////
 		// /NavigationDrawer
 		// ////////////////////////////////////////////////
@@ -109,23 +113,12 @@ public class NolWikiViewerActivity extends Activity {
 		// WebView内で表示させるためWebViewClientを設定する
 		webview.setWebViewClient(client);
 
-		String html = "<html><head><title>Test</title></head><body><h1>Hello, world!</h1></body></html>";
-
-		try {
-
-			FileOutputStream fos = openFileOutput("Test.html", MODE_PRIVATE);
-			OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
-			osw.append(html);
-			PrintWriter writer = new PrintWriter(osw);
-			writer.close();
-		} catch (Exception e) {
-			//			Log.d("Test", "Error");
-		}
 		// ファイルアクセスデレクトリの表示
 		//		Log.v("Test", "file://" + getFilesDir().getPath() + "/Test.html");
 
 		//		webview.loadUrl("http://ohmynobu.net/index.php");
-		webview.loadUrl("file://" + getFilesDir().getPath() + "/Test1.html");
+
+		//		webview.loadUrl("file://" + getFilesDir().getPath() + "/Test.html");
 
 		// ダイアログの設定
 		loading = new ProgressDialog(this);
@@ -134,14 +127,14 @@ public class NolWikiViewerActivity extends Activity {
 		loading.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		loading.setCancelable(false);
 
-		loading.show();
+		//		loading.show();
 
 		// ////////////////////////////////////////////////
 		// /Menuを読み込む
 		// ////////////////////////////////////////////////
 
-		menu = new JsoupTaskMenu(this, this, loading);
-		menu.execute("http://ohmynobu.net/index.php");
+		//		menu = new JsoupTaskMenu(this, this, loading);
+		//		menu.execute("http://ohmynobu.net/index.php");
 
 		// ////////////////////////////////////////////////
 		// /TestTreeView
@@ -166,11 +159,23 @@ public class NolWikiViewerActivity extends Activity {
 
 		}
 
-
 		treeView = (TreeViewList) findViewById(R.id.mainTreeView);
-		simpleAdapter = new TreeViewAdapter(this, selected, manager, LEVEL_NUMBER, this);
+		simpleAdapter = new TreeViewAdapter(this, selected, manager, LEVEL_NUMBER, this, this);
 		treeView.setAdapter(simpleAdapter);
 		manager.collapseChildren(null);
+
+		File dir = this.getFileStreamPath("comment");
+
+		if (dir.exists()) {
+			//			Toast.makeText(NolWikiViewerActivity.this, "フォルダが見つかりました", Toast.LENGTH_SHORT).show();
+		} else {
+			//			Toast.makeText(NolWikiViewerActivity.this, "フォルダが見つかりませんでした", Toast.LENGTH_SHORT).show();
+
+			new File("file://" + getFilesDir().getPath() + "/comment");
+			dir.mkdir();
+		}
+
+//			webview.loadUrl("file:///android_asset/pukiwiki.css");
 
 	}
 
@@ -185,29 +190,68 @@ public class NolWikiViewerActivity extends Activity {
 			// ↓
 			//        /data/data/com.ayaseya.nolwikiviewer/files/Test.html
 
-			url = url.replaceAll("file://", "");
-			File file = new File(url);
+			String file_name = null;
+			String anchor = null;
 
-			// キャッシュが存在するか確認し存在したらリンク先へ移動
-			// 存在しなかった場合はキャッシュを作成するためhtmlの読み込みと保存処理
-			if (file.exists()) {
-				Toast.makeText(NolWikiViewerActivity.this, "ファイルが見つかりました", Toast.LENGTH_SHORT).show();
-				return false;
+			Uri request = Uri.parse(url);
 
-			} else {
-				Toast.makeText(NolWikiViewerActivity.this, "ファイルが見つかりませんでした", Toast.LENGTH_SHORT).show();
+			if (TextUtils.equals(request.getAuthority(), "ohmynobu.net")) {
+				// リンク先のURLが寄合所と同じホスト名であるか判断する
+				// 一致したらリンク先への移動を許可する
+				Log.v("Test", "URL=" + url);
+
+				file_name = url.replaceAll("http://ohmynobu.net/index.php\\?", "");// URLの"http://ohmynobu.net/index.php?"を削除
+
+				int separate = url.indexOf("#");
+				if (separate != -1) {
+					file_name = url.substring(0, separate);
+					anchor = url.substring(separate + 1);
+				}
+
+				Log.v("Test", "File_Name=" + file_name);
+				Log.v("Test", "Anchor_Link=" + anchor);
+
+				try {
+					file_name = URLDecoder.decode(file_name, "EUC-JP");
+					Log.v("Test", "file_name=" + file_name);
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+
+				int comment_separate = file_name.indexOf("/");
+				if (comment_separate != -1) {
+
+					file = new File("file://" + getFilesDir().getPath() + "/" + file_name + ".html");
+
+				} else {
+					file = getFileStreamPath(file_name + ".html");
+				}
+
+				// キャッシュが存在するか確認し存在したらリンク先へ移動
+				// 存在しなかった場合はキャッシュを作成するためhtmlの読み込みと保存処理
+				if (file.exists()) {
+					//					Toast.makeText(NolWikiViewerActivity.this, "ファイルが見つかりました", Toast.LENGTH_SHORT).show();
+
+					if ("null".equals(anchor)) {
+						webview.loadUrl("file://" + getFilesDir().getPath() + "/" + file_name + ".html");
+					} else {
+						webview.loadUrl("file://" + getFilesDir().getPath() + "/" + file_name + ".html" + "#" + anchor);
+					}
+
+				} else {
+					//					Toast.makeText(NolWikiViewerActivity.this, "ファイルが見つかりませんでした", Toast.LENGTH_SHORT).show();
+					loading.show();
+					Jsoup = new JsoupTask(NolWikiViewerActivity.this, NolWikiViewerActivity.this, loading);
+					Log.v("Test", "Jsoup.execute()=" + file_name);
+					Jsoup.execute(file_name);
+				}
+
+				return true;
 			}
+			// 一致しなかった場合はリンク先への移動を許可しない
+			Toast.makeText(NolWikiViewerActivity.this, "外部サイトへ移動することはできません", Toast.LENGTH_SHORT).show();
 			return true;
 
-			//			Uri request = Uri.parse(url);
-			//			if (TextUtils.equals(request.getAuthority(), "ohmynobu.net")) {
-			//				// リンク先のURLが寄合所と同じホスト名であるか判断する
-			//				// 一致したらリンク先への移動を許可する
-			//				return false;
-			//			}
-			//			// 一致しなかった場合はリンク先への移動を許可しない
-			//			Toast.makeText(NolWikiViewerActivity.this, "外部サイトへ移動することはできません", Toast.LENGTH_SHORT).show();
-			//			return true;
 		}
 
 	};
