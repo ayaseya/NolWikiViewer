@@ -13,7 +13,6 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * This is a very simple adapter that provides very basic tree view with a
@@ -141,7 +140,7 @@ class TreeViewAdapter extends AbstractTreeViewAdapter<Long> {
 				webview.loadUrl("file://" + activity.getFilesDir().getPath() + "/" + file_name + ".html");
 
 			} else {
-				Toast.makeText(context, "ファイルが見つかりませんでした", Toast.LENGTH_SHORT).show();
+//				Toast.makeText(context, "ファイルが見つかりませんでした", Toast.LENGTH_SHORT).show();
 				loading.show();
 				Jsoup = new JsoupTask(activity, context, loading);
 				Jsoup.execute(file_name);

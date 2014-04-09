@@ -175,7 +175,7 @@ public class NolWikiViewerActivity extends Activity {
 			dir.mkdir();
 		}
 
-//			webview.loadUrl("file:///android_asset/pukiwiki.css");
+		//			webview.loadUrl("file:///android_asset/pukiwiki.css");
 
 	}
 
@@ -193,6 +193,8 @@ public class NolWikiViewerActivity extends Activity {
 			String file_name = null;
 			String anchor = null;
 
+			String comment_file_name = null;
+
 			Uri request = Uri.parse(url);
 
 			if (TextUtils.equals(request.getAuthority(), "ohmynobu.net")) {
@@ -201,15 +203,17 @@ public class NolWikiViewerActivity extends Activity {
 				Log.v("Test", "URL=" + url);
 
 				file_name = url.replaceAll("http://ohmynobu.net/index.php\\?", "");// URLの"http://ohmynobu.net/index.php?"を削除
-
-				int separate = url.indexOf("#");
-				if (separate != -1) {
-					file_name = url.substring(0, separate);
-					anchor = url.substring(separate + 1);
-				}
-
 				Log.v("Test", "File_Name=" + file_name);
-				Log.v("Test", "Anchor_Link=" + anchor);
+
+				int separate = file_name.indexOf("#");
+				if (separate != -1) {
+
+					anchor = file_name.substring(separate + 1);
+					Log.v("Test", "Anchor_Link=" + anchor);
+
+					file_name = file_name.substring(0, separate);
+					Log.v("Test", "separate_File_Name=" + file_name);
+				}
 
 				try {
 					file_name = URLDecoder.decode(file_name, "EUC-JP");
@@ -219,9 +223,10 @@ public class NolWikiViewerActivity extends Activity {
 				}
 
 				int comment_separate = file_name.indexOf("/");
-				if (comment_separate != -1) {
-
-					file = new File("file://" + getFilesDir().getPath() + "/" + file_name + ".html");
+				if (comment_separate != -1 && separate == -1) {
+					comment_file_name = file_name.substring(comment_separate + 1);
+					//					file = new File("file://" + getFilesDir().getPath() + "/comment/" + comment_file_name + ".html");
+					file = new File(getFilesDir().getPath() + "/comment/" + comment_file_name + ".html");
 
 				} else {
 					file = getFileStreamPath(file_name + ".html");
@@ -232,9 +237,14 @@ public class NolWikiViewerActivity extends Activity {
 				if (file.exists()) {
 					//					Toast.makeText(NolWikiViewerActivity.this, "ファイルが見つかりました", Toast.LENGTH_SHORT).show();
 
-					if ("null".equals(anchor)) {
+					if (comment_separate == -1 && separate == -1) {
+						Log.v("Test", "リンク先のページへ遷移");
 						webview.loadUrl("file://" + getFilesDir().getPath() + "/" + file_name + ".html");
-					} else {
+					} else if (comment_separate != -1) {
+						Log.v("Test", "コメントページへ遷移 ");
+						webview.loadUrl("file://" + getFilesDir().getPath() + "/comment/" + comment_file_name + ".html");
+					} else if (separate != -1) {
+						Log.v("Test", "リンク先のアンカーリンクへ遷移");
 						webview.loadUrl("file://" + getFilesDir().getPath() + "/" + file_name + ".html" + "#" + anchor);
 					}
 
