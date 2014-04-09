@@ -62,11 +62,12 @@ public class JsoupTask extends AsyncTask<String, Void, String> {
 
 		try {
 			path = URLEncoder.encode(file_name, "EUC-JP");
-			//			Log.v("Test", "Path=" + path);
+			Log.v("Test", "Path=" + path);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		String url = "http://ohmynobu.net/index.php?" + path;
+		Log.v("Test", "URL=" + url);
 		try {
 			document = Jsoup.connect(url).get();
 		} catch (IOException e) {
@@ -75,12 +76,13 @@ public class JsoupTask extends AsyncTask<String, Void, String> {
 
 		// div id=bodyの中身を取得する
 		Element body = document.getElementById("body");
-		// body内のimgタグを取得する
-		Elements imgTag = body.getElementsByTag("img");
-		for (Element img : imgTag) {
-			img.remove();// 拡張for文でbody内のimgタグを削除する
+		if (body.getElementsByTag("img").size() != 0) {
+			// body内のimgタグを取得する
+			Elements imgTag = body.getElementsByTag("img");
+			for (Element img : imgTag) {
+				img.remove();// 拡張for文でbody内のimgタグを削除する
+			}
 		}
-
 		String result = body.toString();
 
 		return result;
@@ -94,7 +96,7 @@ public class JsoupTask extends AsyncTask<String, Void, String> {
 		// metaタグは"で文字列が終了したと認識させないようにするため、
 		// "の前に\(エスケープシークエンス)を記述する
 		String html = "<html><head><title></title>"
-				+ "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">"
+				+ "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">"
 				+ "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"file:///android_asset/pukiwiki.css\" charset=\"Shift_JIS\" />"
 				+ "</head><body>"
 				+ result + "</body></html>";
