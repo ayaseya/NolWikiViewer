@@ -16,6 +16,7 @@ import pl.polidea.treeview.TreeViewList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,7 +33,6 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.Toast;
@@ -57,7 +57,7 @@ public class NolWikiViewerActivity extends Activity
 	private JsoupTask Jsoup;
 	private File file;
 	private AlertDialog finish_dialog;
-	private EditText searchEditText;
+	private String search_word;
 
 	/* ********** ********** ********** ********** */
 
@@ -172,20 +172,38 @@ public class NolWikiViewerActivity extends Activity
 		simpleAdapter = new TreeViewAdapter(this, selected, manager, LEVEL_NUMBER, this, this);
 		treeView.setAdapter(simpleAdapter);
 		manager.collapseChildren(null);
-
+		// ////////////////////////////////////////////////
+		// /初回起動時の処理
+		// ////////////////////////////////////////////////
+		
+		// コメントページを保存するフォルダの有無の確認、なければ作成
 		File dir = this.getFileStreamPath("comment");
-
 		if (dir.exists()) {
 			//			Toast.makeText(NolWikiViewerActivity.this, "フォルダが見つかりました", Toast.LENGTH_SHORT).show();
 		} else {
 			//			Toast.makeText(NolWikiViewerActivity.this, "フォルダが見つかりませんでした", Toast.LENGTH_SHORT).show();
-
 			new File("file://" + getFilesDir().getPath() + "/comment");
 			dir.mkdir();
 		}
+		
+		// 寄合所のトップページを保存済みか確認、なければキャッシュ化
+		File FrontPage = this.getFileStreamPath("FrontPage.html");
+		if (FrontPage.exists()) {
+			//			Toast.makeText(NolWikiViewerActivity.this, "ファイルが見つかりました", Toast.LENGTH_SHORT).show();	
+			webview.loadUrl("file://" + getFilesDir().getPath() + "/FrontPage.html");
+		} else {
+			//			Toast.makeText(NolWikiViewerActivity.this, "ファイルが見つかりませんでした", Toast.LENGTH_SHORT).show();
+			loading.show();
+			Jsoup = new JsoupTask(NolWikiViewerActivity.this, NolWikiViewerActivity.this, loading);
+			Jsoup.execute("FrontPage");
+			
+		}
 
 		//			webview.loadUrl("file:///android_asset/pukiwiki.css");
-
+		
+		// ////////////////////////////////////////////////
+		// /終了確認ダイアログの作成、広告データの読み込み
+		// ////////////////////////////////////////////////
 		LayoutInflater inflater = LayoutInflater.from(NolWikiViewerActivity.this);
 		View dialog = inflater.inflate(R.layout.finish_dialog,
 				(ViewGroup) findViewById(R.id.finish_dialog));
@@ -224,6 +242,10 @@ public class NolWikiViewerActivity extends Activity
 
 	}
 
+	
+	// ////////////////////////////////////////////////
+	// /WebView内のリンクをクリックした時の処理
+	// ////////////////////////////////////////////////
 	private WebViewClient client = new WebViewClient() {
 
 		@Override
@@ -235,12 +257,11 @@ public class NolWikiViewerActivity extends Activity
 			// ↓
 			//        /data/data/com.ayaseya.nolwikiviewer/files/Test.html
 
-			String file_name = null;
-			String anchor = null;
+			String file_name = null;// ファイル名(例：%BF%AEOn%C6%FE%CC%E7)
+			String anchor = null;// アンカーリンク名 #は含まない(例：xxxxxx)
+			String comment_file_name = null;// コメントページのファイル名(例：%BF%AEOn%C6%FE%CC%E7)
 
-			String comment_file_name = null;
-
-			Uri request = Uri.parse(url);
+			Uri request = Uri.parse(url);// 引数で渡されたurl(文字列)をURIに変換する
 
 			if (TextUtils.equals(request.getAuthority(), "ohmynobu.net")) {
 				// リンク先のURLが寄合所と同じホスト名であるか判断する
@@ -250,16 +271,17 @@ public class NolWikiViewerActivity extends Activity
 				file_name = url.replaceAll("http://ohmynobu.net/index.php\\?", "");// URLの"http://ohmynobu.net/index.php?"を削除
 				Log.v("Test", "File_Name=" + file_name);
 
-				int separate = file_name.indexOf("#");
-				if (separate != -1) {
-
+				int separate = file_name.indexOf("#");// #が何文字目に存在するか確認、0文字目からカウントスタート、存在しなければ-1が返される
+				if (separate != -1) {// #が存在すればファイル名とアンカーリンク名に分割する
 					anchor = file_name.substring(separate + 1);
 					Log.v("Test", "Anchor_Link=" + anchor);
 
 					file_name = file_name.substring(0, separate);
 					Log.v("Test", "separate_File_Name=" + file_name);
 				}
-
+				
+				// ファイル名をデコードする(パーセントエンコード)
+				// %BF%AEOn%C6%FE%CC%E7→信On入門
 				try {
 					file_name = URLDecoder.decode(file_name, "EUC-JP");
 					Log.v("Test", "file_name=" + file_name);
@@ -267,13 +289,16 @@ public class NolWikiViewerActivity extends Activity
 					e.printStackTrace();
 				}
 
-				int comment_separate = file_name.indexOf("/");
-				if (comment_separate != -1 && separate == -1) {
+				int comment_separate = file_name.indexOf("/");// ファイル名に/が含まれているか確認、0文字目からカウントスタート、存在しなければ-1が返される
+				if (comment_separate != -1 && separate == -1) {// /が存在した場合の処理、コメントフォルダ以下に格納されるべきファイル
+					// フォルダ名とファイル名を分割するコメント/信On入門→信On入門
 					comment_file_name = file_name.substring(comment_separate + 1);
 					//					file = new File("file://" + getFilesDir().getPath() + "/comment/" + comment_file_name + ".html");
+					// ローカルに保存する場所(パス)を設定しておく
 					file = new File(getFilesDir().getPath() + "/comment/" + comment_file_name + ".html");
 
 				} else {
+					// ローカルに保存する場所(パス)を設定しておく
 					file = getFileStreamPath(file_name + ".html");
 				}
 
@@ -293,7 +318,7 @@ public class NolWikiViewerActivity extends Activity
 						webview.loadUrl("file://" + getFilesDir().getPath() + "/" + file_name + ".html" + "#" + anchor);
 					}
 
-				} else {
+				} else {// ローカルにキャッシュが存在しなかった時の処理
 					//					Toast.makeText(NolWikiViewerActivity.this, "ファイルが見つかりませんでした", Toast.LENGTH_SHORT).show();
 					loading.show();
 					Jsoup = new JsoupTask(NolWikiViewerActivity.this, NolWikiViewerActivity.this, loading);
@@ -302,15 +327,19 @@ public class NolWikiViewerActivity extends Activity
 				}
 
 				return true;
+			} else if (TextUtils.equals(request.getAuthority(), "www.gamecity.ne.jp")) {
+				// 公式サイトへ移動する場合はキャッシュ化させないために標準ブラウザに暗黙的インテントを飛ばす
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+				startActivity(intent);
+			} else {
+				// 一致しなかった場合はリンク先への移動を許可しない
+				Toast.makeText(NolWikiViewerActivity.this, "外部サイトへ移動することはできません", Toast.LENGTH_SHORT).show();
 			}
-			// 一致しなかった場合はリンク先への移動を許可しない
-			Toast.makeText(NolWikiViewerActivity.this, "外部サイトへ移動することはできません", Toast.LENGTH_SHORT).show();
-			return true;
-
+			return true;//trueだとWebView内の移動を許可しない、falseだと同じWebView内のリンク先に移動できる
 		}
 
 	};
-	private String search_word;
+
 
 	// 戻る(タッチキー)を押した時の処理
 	@Override
@@ -334,7 +363,8 @@ public class NolWikiViewerActivity extends Activity
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.nol_wiki_viewer, menu);
-
+		
+		// 更新ボタンのアイコンが存在しない場合の処理
 		final String idString = "@*android:drawable/ic_menu_refresh";
 		final int id = getResources().getIdentifier(idString, null, null);
 		menu.findItem(R.id.menu_refresh).setIcon(id);
@@ -343,35 +373,14 @@ public class NolWikiViewerActivity extends Activity
 		MenuItem searchItem = menu.findItem(R.id.menu_search);
 		final SearchView searchView = (SearchView) searchItem.getActionView();
 		searchView.setOnQueryTextListener(this);
-
+		
+		// アイコンをアクションバーに表示する
 		menu.findItem(R.id.menu_refresh).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 		menu.findItem(R.id.menu_close).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
 		return true;
 	}
 
-	// ////////////////////////////////////////////////
-	// /OnQueryTextListener
-	// ////////////////////////////////////////////////
-	@Override
-	public boolean onQueryTextSubmit(String query) {
-//		Log.v("Test", "onQueryTextSubmit()");
-
-		if (query.equals(search_word)) {
-			webview.findNext(true);
-		} else {
-			search_word = query;
-			webview.findAll(query);
-		}
-
-		return false;
-	}
-
-	@Override
-	public boolean onQueryTextChange(String aquery) {
-		//		Log.v("Test", "onQueryTextChange()");
-		return false;
-	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -444,7 +453,32 @@ public class NolWikiViewerActivity extends Activity
 
 		return super.onOptionsItemSelected(item);
 	}
+	// ////////////////////////////////////////////////
+	// /OnQueryTextListener
+	// ////////////////////////////////////////////////
+	@Override
+	public boolean onQueryTextSubmit(String query) {
+		//		Log.v("Test", "onQueryTextSubmit()");
 
+		if (query.equals(search_word)) {// 検索ワードが同じ場合、次のハイライトに飛ぶ
+			webview.findNext(true);
+		} else {// 検索ワードが異なる場合、全文検索を実行する
+			search_word = query;
+			webview.findAll(query);
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean onQueryTextChange(String aquery) {
+		//		Log.v("Test", "onQueryTextChange()");
+		return false;
+	}
+	
+	// ////////////////////////////////////////////////
+	// /NavigationDrawer
+	// ////////////////////////////////////////////////
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
@@ -462,6 +496,10 @@ public class NolWikiViewerActivity extends Activity
 		outState.putSerializable("treeManager", manager);
 		super.onSaveInstanceState(outState);
 	}
+	
+	// ////////////////////////////////////////////////
+	// /広告
+	// ////////////////////////////////////////////////
 
 	/** 受信エラー通知 */
 	@Override

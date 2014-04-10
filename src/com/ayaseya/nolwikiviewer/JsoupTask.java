@@ -58,16 +58,24 @@ public class JsoupTask extends AsyncTask<String, Void, String> {
 	// returnでonPostExecute()へデータを受け渡す
 	@Override
 	protected String doInBackground(String... params) {
+		// 引数をファイル名に設定する(例：信On入門)
 		file_name = params[0];
 
+		// ファイル名をエンコードする
+		// 信On入門→%BF%AEOn%C6%FE%CC%E7
 		try {
 			path = URLEncoder.encode(file_name, "EUC-JP");
 			Log.v("Test", "Path=" + path);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
+		
+		// ファイル名とURLを文字列結合
 		String url = "http://ohmynobu.net/index.php?" + path;
 		Log.v("Test", "URL=" + url);
+		
+		// 指定したページをJsoupでスクレイピングする
+		// http://ja.wikipedia.org/wiki/%E3%82%A6%E3%82%A7%E3%83%96%E3%82%B9%E3%82%AF%E3%83%AC%E3%82%A4%E3%83%94%E3%83%B3%E3%82%B0
 		try {
 			document = Jsoup.connect(url).get();
 		} catch (IOException e) {
@@ -103,7 +111,7 @@ public class JsoupTask extends AsyncTask<String, Void, String> {
 		WebView webview = (WebView) activity.findViewById(R.id.webView);
 
 		int comment_separate = file_name.indexOf("/");
-		if (comment_separate != -1) {
+		if (comment_separate != -1) {// コメントページの場合の処理
 			try {
 				file_name = file_name.substring(comment_separate + 1);
 				FileOutputStream fos = new FileOutputStream(
@@ -119,7 +127,7 @@ public class JsoupTask extends AsyncTask<String, Void, String> {
 			}
 			webview.loadUrl("file://" + context.getFilesDir().getPath() + "/comment/" + file_name + ".html");
 
-		} else {
+		} else {// 通常のページの処理
 			try {
 				FileOutputStream fos = context.openFileOutput(file_name + ".html", Context.MODE_PRIVATE);
 				OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");
@@ -132,7 +140,7 @@ public class JsoupTask extends AsyncTask<String, Void, String> {
 			}
 			webview.loadUrl("file://" + context.getFilesDir().getPath() + "/" + file_name + ".html");
 		}
-
+		// 通信中ダイアログの表示を消す
 		loading.dismiss();
 
 	}

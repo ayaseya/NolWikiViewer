@@ -107,6 +107,7 @@ class TreeViewAdapter extends AbstractTreeViewAdapter<Long> {
 
 	@Override
 	public void handleItemClick(final View view, final Object id) {
+		// リストビューをクリックした時の処理
 		final Long longId = (Long) id;
 
 		final TreeNodeInfo<Long> info = getManager().getNodeInfo(longId);

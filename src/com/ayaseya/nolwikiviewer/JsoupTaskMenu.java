@@ -44,6 +44,10 @@ public class JsoupTaskMenu extends AsyncTask<String, Void, String> {
 	private Activity activity;
 	private Context context;
 	private ProgressDialog loading;
+	
+	// ////////////////////////////////////////////////
+	// /使用変更により、このクラスは使用せず
+	// ////////////////////////////////////////////////
 
 	// コンストラクタ
 	public JsoupTaskMenu(Activity activity, Context context,ProgressDialog loading) {
