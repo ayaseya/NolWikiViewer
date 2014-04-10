@@ -151,22 +151,22 @@ public class NolWikiViewerActivity extends Activity
 
 		names = getResources().getStringArray(R.array.menu_name);
 
-		if (savedInstanceState == null) {
-			manager = new InMemoryTreeStateManager<Long>();
-			final TreeBuilder<Long> treeBuilder = new TreeBuilder<Long>(manager);
+		//		if (savedInstanceState == null) {
+		manager = new InMemoryTreeStateManager<Long>();
+		final TreeBuilder<Long> treeBuilder = new TreeBuilder<Long>(manager);
 
-			for (int i = 0; i < names.length; i++) {
-				treeBuilder.sequentiallyAddNextNode((long) i,
-						Integer.parseInt(names[i].substring(0, 1)));
-			}
-
-		} else {
-			manager = (TreeStateManager<Long>) savedInstanceState.getSerializable("treeManager");
-			if (manager == null) {
-				manager = new InMemoryTreeStateManager<Long>();
-			}
-
+		for (int i = 0; i < names.length; i++) {
+			treeBuilder.sequentiallyAddNextNode((long) i,
+					Integer.parseInt(names[i].substring(0, 1)));
 		}
+
+		//		} else {
+		//			manager = (TreeStateManager<Long>) savedInstanceState.getSerializable("treeManager");
+		//			if (manager == null) {
+		//				manager = new InMemoryTreeStateManager<Long>();
+		//			}
+		//
+		//		}
 
 		treeView = (TreeViewList) findViewById(R.id.mainTreeView);
 		simpleAdapter = new TreeViewAdapter(this, selected, manager, LEVEL_NUMBER, this, this);
@@ -175,7 +175,7 @@ public class NolWikiViewerActivity extends Activity
 		// ////////////////////////////////////////////////
 		// /初回起動時の処理
 		// ////////////////////////////////////////////////
-		
+
 		// コメントページを保存するフォルダの有無の確認、なければ作成
 		File dir = this.getFileStreamPath("comment");
 		if (dir.exists()) {
@@ -185,7 +185,7 @@ public class NolWikiViewerActivity extends Activity
 			new File("file://" + getFilesDir().getPath() + "/comment");
 			dir.mkdir();
 		}
-		
+
 		// 寄合所のトップページを保存済みか確認、なければキャッシュ化
 		File FrontPage = this.getFileStreamPath("FrontPage.html");
 		if (FrontPage.exists()) {
@@ -196,11 +196,11 @@ public class NolWikiViewerActivity extends Activity
 			loading.show();
 			Jsoup = new JsoupTask(NolWikiViewerActivity.this, NolWikiViewerActivity.this, loading);
 			Jsoup.execute("FrontPage");
-			
+
 		}
 
 		//			webview.loadUrl("file:///android_asset/pukiwiki.css");
-		
+
 		// ////////////////////////////////////////////////
 		// /終了確認ダイアログの作成、広告データの読み込み
 		// ////////////////////////////////////////////////
@@ -242,7 +242,6 @@ public class NolWikiViewerActivity extends Activity
 
 	}
 
-	
 	// ////////////////////////////////////////////////
 	// /WebView内のリンクをクリックした時の処理
 	// ////////////////////////////////////////////////
@@ -268,6 +267,10 @@ public class NolWikiViewerActivity extends Activity
 				// 一致したらリンク先への移動を許可する
 				Log.v("Test", "URL=" + url);
 
+				if(url.equals("http://ohmynobu.net/")){
+					return true;
+				}
+				
 				file_name = url.replaceAll("http://ohmynobu.net/index.php\\?", "");// URLの"http://ohmynobu.net/index.php?"を削除
 				Log.v("Test", "File_Name=" + file_name);
 
@@ -279,7 +282,7 @@ public class NolWikiViewerActivity extends Activity
 					file_name = file_name.substring(0, separate);
 					Log.v("Test", "separate_File_Name=" + file_name);
 				}
-				
+
 				// ファイル名をデコードする(パーセントエンコード)
 				// %BF%AEOn%C6%FE%CC%E7→信On入門
 				try {
@@ -340,7 +343,6 @@ public class NolWikiViewerActivity extends Activity
 
 	};
 
-
 	// 戻る(タッチキー)を押した時の処理
 	@Override
 	public void onBackPressed() {
@@ -363,7 +365,7 @@ public class NolWikiViewerActivity extends Activity
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.nol_wiki_viewer, menu);
-		
+
 		// 更新ボタンのアイコンが存在しない場合の処理
 		final String idString = "@*android:drawable/ic_menu_refresh";
 		final int id = getResources().getIdentifier(idString, null, null);
@@ -373,14 +375,13 @@ public class NolWikiViewerActivity extends Activity
 		MenuItem searchItem = menu.findItem(R.id.menu_search);
 		final SearchView searchView = (SearchView) searchItem.getActionView();
 		searchView.setOnQueryTextListener(this);
-		
+
 		// アイコンをアクションバーに表示する
 		menu.findItem(R.id.menu_refresh).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 		menu.findItem(R.id.menu_close).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
 		return true;
 	}
-
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -453,6 +454,7 @@ public class NolWikiViewerActivity extends Activity
 
 		return super.onOptionsItemSelected(item);
 	}
+
 	// ////////////////////////////////////////////////
 	// /OnQueryTextListener
 	// ////////////////////////////////////////////////
@@ -475,7 +477,7 @@ public class NolWikiViewerActivity extends Activity
 		//		Log.v("Test", "onQueryTextChange()");
 		return false;
 	}
-	
+
 	// ////////////////////////////////////////////////
 	// /NavigationDrawer
 	// ////////////////////////////////////////////////
@@ -496,7 +498,7 @@ public class NolWikiViewerActivity extends Activity
 		outState.putSerializable("treeManager", manager);
 		super.onSaveInstanceState(outState);
 	}
-	
+
 	// ////////////////////////////////////////////////
 	// /広告
 	// ////////////////////////////////////////////////

@@ -28,12 +28,19 @@
                 android:padding="5dp"
                 android:src="@android:drawable/ic_dialog_alert" />
 
+<!--             <net.nend.android.NendAdView -->
+<!--                 android:id="@+id/nend" -->
+<!--                 android:layout_width="wrap_content" -->
+<!--                 android:layout_height="wrap_content" -->
+<!--                 NendApiKey="499f011dbec5d37cfa388b749aed2bfff440a794" -->
+<!--                 NendSpotId="70357" /> -->
+
             <net.nend.android.NendAdView
                 android:id="@+id/nend"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                NendApiKey="499f011dbec5d37cfa388b749aed2bfff440a794"
-                NendSpotId="70357" />
+                NendApiKey="cbe385cebae3ca5915e147f4f2ab65db01092938"
+                NendSpotId="160539" />
 
             <TextView
                 android:layout_width="match_parent"
