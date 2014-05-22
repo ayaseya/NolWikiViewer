@@ -12,7 +12,6 @@
         <item>2:合戦</item>
         <item>2:拠点戦</item>
         <item>2:陣取戦</item>
-        <item>2:大決戦</item>
         <item>1:ダンジョン</item>
         <item>2:ダンジョン</item>
         <item>2:妖魔陣</item>
@@ -47,10 +46,12 @@
         <item>1:紋所</item>
         <item>1:官位</item>
         <item>1:知行</item>
+        
         <item>0:天下夢幻の章</item>
         <item>1:天下夢幻の章</item>
         <item>1:天下夢幻新目録</item>
         <item>1:軍神</item>
+        <item>1:軍団</item>
         <item>1:攻城戦</item>
         <item>1:もののふ道場</item>
         <item>2:もののふ道場</item>
@@ -60,7 +61,11 @@
         <item>2:魔障の浅瀬</item>
         <item>2:魔都裏堺</item>
         <item>2:魔洞東尋坊</item>
+        <item>2:凶禍千引洞穴</item>
+        <item>2:魔鉱佐渡金山</item>
+        
         <item>1:安土</item>
+        
         <item>0:鳳凰の章</item>
         <item>1:鳳凰の章</item>
         <item>1:鳳凰新目録</item>
@@ -110,116 +115,6 @@
         <item>1:過去の遺物</item>
         <item>1:リンク集</item>
         <item>1:寄合所について</item>
-    </string-array>
-    <string-array name="menu_url" formatted="false">
-        <item>合戦・ダンジョン・NPC|</item>
-        <item>信On入門|%BF%AEOn%C6%FE%CC%E7</item>
-        <item>FAQ|FAQ</item>
-        <item>新参者ゾーン|%BF%B7%BB%B2%BC%D4%A5%BE%A1%BC%A5%F3</item>
-        <item>地図|%C3%CF%BF%DE</item>
-        <item>勢力|%C0%AA%CE%CF</item>
-        <item>合戦|</item>
-        <item>合戦|%B9%E7%C0%EF</item>
-        <item>拠点戦|%B5%F2%C5%C0%C0%EF</item>
-        <item>陣取戦|%BF%D8%BC%E8%C0%EF</item>
-        <item>大決戦|%C2%E7%B7%E8%C0%EF</item>
-        <item>ダンジョン|</item>
-        <item>ダンジョン|%A5%C0%A5%F3%A5%B8%A5%E7%A5%F3</item>
-        <item>妖魔陣|%CD%C5%CB%E2%BF%D8</item>
-        <item>ﾄﾗｲｱﾙﾀﾞﾝｼﾞｮﾝ|%A5%C8%A5%E9%A5%A4%A5%A2%A5%EB%A5%C0%A5%F3%A5%B8%A5%E7%A5%F3</item>
-        <item>黄泉～イザ宮|%B2%AB%C0%F4%A1%C1%A5%A4%A5%B6%A5%CA%A5%DF%B5%DC</item>
-        <item>凶神の冥宮|%B6%A7%BF%C0%A4%CE%CC%BD%B5%DC</item>
-        <item>星野山千尋窟|%C0%B1%CC%EE%BB%B3%C0%E9%BF%D2%B7%A2</item>
-        <item>陸海空|%BF%AF%B9%B6%B7%BF%8E%C0%8E%DE%8E%DD%8E%BC%8E%DE%8E%AE%8E%DD</item>
-        <item>九州三国志|%B6%E5%BD%A3%BB%B0%B9%F1%BB%D6</item>
-        <item>高千穂|%B9%E2%C0%E9%CA%E6</item>
-        <item>伊勢路の戦い|%B0%CB%C0%AA%CF%A9%A4%CE%C0%EF%A4%A4</item>
-        <item>独眼竜の野望|%C6%C8%B4%E3%CE%B5%A4%CE%CC%EE%CB%BE</item>
-        <item>敵NPCリスト|%C5%A8NPC%A5%EA%A5%B9%A5%C8</item>
-        <item>職業・生産・クエスト|</item>
-        <item>職業|</item>
-        <item>職業|%BF%A6%B6%C8</item>
-        <item>生産|%C0%B8%BB%BA</item>
-        <item>技能|%B5%BB%C7%BD%B0%EC%CD%F7</item>
-        <item>潜在能力|%C0%F8%BA%DF%C7%BD%CE%CF</item>
-        <item>技能覚醒|%B5%BB%C7%BD%B3%D0%C0%C3</item>
-        <item>アイテム|%A5%A2%A5%A4%A5%C6%A5%E0</item>
-        <item>クエスト|</item>
-        <item>クエスト|%A5%AF%A5%A8%A5%B9%A5%C8</item>
-        <item>毎日クエスト|%CB%E8%C6%FC%C0%AE%C4%B9%A5%AF%A5%A8%A5%B9%A5%C8</item>
-        <item>中級者クエスト|%C3%E6%B5%E9%BC%D4%A5%AF%A5%A8%A5%B9%A5%C8</item>
-        <item>上級者クエスト|%BE%E5%B5%E9%BC%D4%A5%AF%A5%A8%A5%B9%A5%C8</item>
-        <item>採集情報|%BA%CE%BD%B8%BE%F0%CA%F3</item>
-        <item>御蔵番拡張|%B8%E6%C2%A2%C8%D6%A4%D8%A4%CE%BE%D2%B2%F0%BE%F5</item>
-        <item>武家屋敷|</item>
-        <item>武家屋敷|%C9%F0%B2%C8%B2%B0%C9%DF</item>
-        <item>ペット|%A5%DA%A5%C3%A5%C8</item>
-        <item>紋所|%CC%E6%BD%EA</item>
-        <item>官位|%B4%B1%B0%CC</item>
-        <item>知行|%C3%CE%B9%D4</item>
-        <item>天下夢幻の章|</item>
-        <item>天下夢幻の章|%C5%B7%B2%BC%CC%B4%B8%B8%A4%CE%BE%CF</item>
-        <item>天下夢幻新目録|%C5%B7%B2%BC%CC%B4%B8%B8%BF%B7%CC%DC%CF%BF</item>
-        <item>軍神|%B7%B3%BF%C0</item>
-        <item>攻城戦|%B9%B6%BE%EB%C0%EF</item>
-        <item>もののふ道場|</item>
-        <item>もののふ道場|%A4%E2%A4%CE%A4%CE%A4%D5%C6%BB%BE%EC</item>
-        <item>魔宮ワダツミ|%CB%E2%B5%DC%A5%EF%A5%C0%A5%C4%A5%DF</item>
-        <item>魔穴富士地下|%CB%E2%B7%EA%C9%D9%BB%CE%C3%CF%B2%BC</item>
-        <item>魔獣の森|%CB%E2%BD%C3%A4%CE%BF%B9</item>
-        <item>魔障の浅瀬|%CB%E2%BE%E3%A4%CE%C0%F5%C0%A5</item>
-        <item>魔都裏堺|%CB%E2%C5%D4%CE%A2%BA%E6</item>
-        <item>魔洞東尋坊|%CB%E2%C6%B6%C5%EC%BF%D2%CB%B7</item>
-        <item>安土|%B0%C2%C5%DA</item>
-        <item>鳳凰の章|</item>
-        <item>鳳凰の章|%CB%B1%D1%E0%A4%CE%BE%CF</item>
-        <item>鳳凰新目録|%CB%B1%D1%E0%BF%B7%CC%DC%CF%BF</item>
-        <item>秀吉戦記|</item>
-        <item>秀吉戦記|%BD%A8%B5%C8%C0%EF%B5%AD</item>
-        <item>桶狭間の戦い|%B2%B3%B6%B9%B4%D6%A4%CE%C0%EF%A4%A4</item>
-        <item>長篠の戦い|%C4%B9%BC%C4%A4%CE%C0%EF%A4%A4</item>
-        <item>山崎の戦い|%BB%B3%BA%EA%A4%CE%C0%EF%A4%A4</item>
-        <item>賤ヶ岳の戦い|%EC%CD%A5%F6%B3%D9%A4%CE%C0%EF%A4%A4</item>
-        <item>忘却の魔境|%CB%BA%B5%D1%A4%CE%CB%E2%B6%AD</item>
-        <item>週刊かわら版|%BD%B5%B4%A9%A4%AB%A4%EF%A4%E9%C8%C7</item>
-        <item>城下町|%BE%EB%B2%BC%C4%AE</item>
-        <item>家臣団|%B2%C8%BF%C3%C3%C4</item>
-        <item>新星の章|</item>
-        <item>新星の章|%BF%B7%C0%B1%A4%CE%BE%CF</item>
-        <item>新星新目録|%BF%B7%C0%B1%BF%B7%CC%DC%CF%BF</item>
-        <item>独眼竜の野望|</item>
-        <item>独眼竜の野望|%C6%C8%B4%E3%CE%B5%A4%CE%CC%EE%CB%BE</item>
-        <item>鬼門比叡山|%B5%B4%CC%E7%C8%E6%B1%C3%BB%B3</item>
-        <item>松島|%BE%BE%C5%E7</item>
-        <item>人取橋|%BF%CD%BC%E8%B6%B6</item>
-        <item>小田原の陣|%BE%AE%C5%C4%B8%B6%A4%CE%BF%D8</item>
-        <item>関ヶ原の陣|%B4%D8%A5%F6%B8%B6%A4%CE%BF%D8</item>
-        <item>時の狭間|%BB%FE%A4%CE%B6%B9%B4%D6</item>
-        <item>天下人|</item>
-        <item>天下人|%C5%B7%B2%BC%BF%CD</item>
-        <item>合戦|%B9%E7%C0%EF</item>
-        <item>拠点戦|%B5%F2%C5%C0%C0%EF</item>
-        <item>一門|</item>
-        <item>一門|%B0%EC%CC%E7</item>
-        <item>所領|%B0%EC%CC%E7%2F%B0%EC%CC%E7%BD%EA%CE%CE</item>
-        <item>評定|</item>
-        <item>評定|%C9%BE%C4%EA</item>
-        <item>評定依頼|%C9%BE%C4%EA%2F%C9%BE%C4%EA%B0%CD%CD%EA</item>
-        <item>領国市|%CE%CE%B9%F1%BB%D4</item>
-        <item>新アイテム|</item>
-        <item>新アイテム|%A5%A2%A5%A4%A5%C6%A5%E0</item>
-        <item>腰袋|%B9%F8%C2%DE</item>
-        <item>指輪|%BB%D8%CE%D8</item>
-        <item>その他|</item>
-        <item>戦国絵巻|%C0%EF%B9%F1%B3%A8%B4%AC</item>
-        <item>上覧武術大会|%BE%E5%CD%F7%C9%F0%BD%D1%C2%E7%B2%F1</item>
-        <item>＠モバイル|%BF%AE%C4%B9%A4%CE%CC%EE%CB%BE%20Online%A1%F7%A5%E2%A5%D0%A5%A4%A5%EB</item>
-        <item>小ネタ|%BE%AE%A5%CD%A5%BF</item>
-        <item>信オンTools|%BF%AE%A5%AA%A5%F3Tools</item>
-        <item>Nobusionary|Nobusionary</item>
-        <item>過去の遺物|%B2%E1%B5%EE%A4%CE%B0%E4%CA%AA</item>
-        <item>リンク集|%A5%EA%A5%F3%A5%AF%BD%B8</item>
-        <item>寄合所について|%B4%F3%B9%E7%BD%EA%A4%CB%A4%C4%A4%A4%A4%C6</item>
     </string-array>
 
 </resources>
