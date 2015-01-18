@@ -47,6 +47,12 @@
         <item>1:官位</item>
         <item>1:知行</item>
         
+		<item>0:覚醒の章</item>
+		<item>1:覚醒の章</item>
+        <item>1:稼業</item>
+        <item>1:大名物依頼</item>
+        <item>1:覚醒新目録</item>
+        
         <item>0:天下夢幻の章</item>
         <item>1:天下夢幻の章</item>
         <item>1:天下夢幻新目録</item>
@@ -55,6 +61,7 @@
         <item>1:攻城戦</item>
         <item>1:もののふ道場</item>
         <item>2:もののふ道場</item>
+        <item>2:オノゴロ</item>
         <item>2:魔宮ワダツミ</item>
         <item>2:魔穴富士地下</item>
         <item>2:魔獣の森</item>
